@@ -35,7 +35,63 @@ router.route("/usuarios")//aqui vai ser chamado em /api/usuarios
             }
             return res.json({"mensagem": "Usuário salvo."});
         });
+    })
+    .get(function(req, res){
+        usuario.find(function(erro, usuarios){
+            if(erro){
+                res.send(erro);
+            }
+            res.json(usuarios);
+        });
     });
+
+
+router.route("/usuarios/:id")
+    .get(function(req, res){
+        usuario.findById(req.params.id, function(erro, usu){
+            if(erro){
+                res.send(erro);
+            }else{
+                res.json(usu);
+            }
+        });
+    })
+    .put(function(req, res){
+        usuario.findById(req.params.id, function(erro,usu){
+            if(erro){
+                res.send(erro);
+            }else{
+                if(req.body.nome){
+                    usu.nome = req.body.nome;
+                }
+                if(req.body.senha){
+                    usu.senha = req.body.senha;
+                }
+                if(req.body.usuario){
+                    usu.usuario = req.body.usuario;
+                }
+                usu.save(usu, function(erro){
+                    if(erro){
+                        res.send(erro);
+                    }else{
+                        res.json({"mensagem": "Usuário atualizado."});
+                    }
+                });
+            }
+        });
+    })
+    .delete(function(req, res){
+         usuario.remove({
+                _id: req.params.id
+             }, function(erro, usu){
+                if(erro){
+                    res.send(erro);
+                }else{
+                    res.json({"mensagem" : "Usuário removido."});
+                }
+             });    
+    });
+    
 
 
 
@@ -58,4 +114,4 @@ mongoose.connection.on("connected", function(){
 
 app.listen(porta, function(){
     console.log("Servidor on-line na porta " + porta);
-})
+});
